@@ -5,6 +5,7 @@
 #include "external/vec.h"
 
 typedef enum {
+    TOKEN_NULL,
     TOKEN_LABEL,
     TOKEN_OPERATOR,
     TOKEN_INT,

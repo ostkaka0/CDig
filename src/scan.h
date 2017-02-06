@@ -2,6 +2,7 @@
 #define SCAN_H
 
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "common.h"
 #include "token.h"
@@ -15,7 +16,8 @@ vec_token_t scan(const char* src) {
     int i = 0;
     for (;;) {//while (i + 3 <= buffer_size) {
         token_t token;
-        size_t len = 1;
+        token.token_enum = TOKEN_NULL;
+        size_t len = 0;
         
         char c = src[i];
         
@@ -37,48 +39,83 @@ vec_token_t scan(const char* src) {
         
         // Label
         if (isalpha(c) || c == '_') {
-            len = 0;
+            token.token_enum = TOKEN_LABEL;
             do {
                 len++;
                 c = src[i + len];
             }
             while (isalnum(c) || c == '_');
-            token.token_enum = TOKEN_LABEL;
         }
-        // Int, Float
-        else if (isdigit(c) || c == '.') {
-            len++;
-            while (isdigit(c) || tolower(c) == "f" || tolower(c) == "e") {
+        else if (c == '\'') {
+            token.token_enum = TOKEN_CHAR;
+            bool backslash = false;
+            do {
+                backslash = (!backslash && c == '\\');
                 len++;
                 c = src[i + len];
-            }
-
-            if (c == '.') {
-                do {
+                if (c == NULL || c == EOF || c == '\n') break;
+            } while(c != '\'' || backslash);
+            len++;
+        }
+        else if (c == '\"') {
+            token.token_enum = TOKEN_STRING;
+            bool backslash = false;
+            do {
+                backslash = (!backslash && c == '\\');
+                len++;
+                c = src[i + len];
+                if (c == NULL || c == EOF) break;
+            } while(c != '\"' || backslash);
+            len++;
+        }
+        else {
+            // Int, Float
+            if (isdigit(c) || (c == '.')) {
+                len = 0;
+                while (isdigit(c)) {
                     len++;
                     c = src[i + len];
-                } while(isdigit(c) || c == '.' || tolower(c) == "f" || tolower(c) == "e");
-                token.token_enum = TOKEN_FLOAT;
+                }
+
+                if (c == '.') {
+                    do {
+                        len++;
+                        c = src[i + len];
+                    } while(isdigit(c) || c == '.' || tolower(c) == "f" || tolower(c) == "e");
+                    if (len != 1) {
+                        token.token_enum = TOKEN_FLOAT;
+                    } else {
+                        len = 0;
+                        c = src[i];
+                    }
+                }
+                else
+                   token. token_enum = TOKEN_INT;
             }
-            else
-               token. token_enum = TOKEN_INT;
+            // Char:
+            // Operator:
+            if (token.token_enum == TOKEN_NULL && (ispunct(c))) {
+                token.token_enum = TOKEN_OPERATOR;
+                char c2 = src[i+1];
+                // +=  -=  *=  /=  %=  ^=  !=  <=  >=  ==
+                if (c2 == '=' && (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '!' || c == '<' || c == '>' || c == '='))
+                    len = 2;
+                // ++  --  &&  ||
+                else if (c == c2 && (c == '+' || c == '-' || c == '|' || c == '&'))
+                    len = 2;
+                // ->
+                else if (c == '-' && c2 == '>')
+                    len = 2;
+                // >>  <<  >>=  <<=
+                else if (c == c2 && (c == '<' || c == '>'))
+                    len = (src[i + 2] == '=')? 3 : 2;
+                else
+                    len = 1;
+            }
         }
-        // Operator:
-        else if (ispunct(c)) {
-            token.token_enum = TOKEN_OPERATOR;
-            char c2 = src[i+1];
-            // +=  -=  *=  /=  %=  ^=  !=  <=  >=  ==
-            if (c2 == '=' && (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^' || c == '!' || c == '<' || c == '>' || c == '='))
-                len = 2;
-            // ++  --  &&  ||
-            else if (c == c2 && (c == '+' || c == '-' || c == '|' || c == '&'))
-                len = 2;
-            // ->
-            else if (c == '-' && c2 == '>')
-                len = 2;
-            // >>  <<  >>=  <<=
-            else if (c == c2 && (c == '<' || c == '>'))
-                len = (src[i + 2] == '=')? 3 : 2;
+        if (token.token_enum == TOKEN_NULL) {
+            printf("Unexpected character '%c'\n", src[i]);
+            len = 1;
         }
 
         token.line_num = line_num;
