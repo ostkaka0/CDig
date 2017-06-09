@@ -1,0 +1,3 @@
+/home/ostkaka/git/CDig/CMakeFiles/edit_cache.dir
+/home/ostkaka/git/CDig/CMakeFiles/rebuild_cache.dir
+/home/ostkaka/git/CDig/CMakeFiles/CDig.dir

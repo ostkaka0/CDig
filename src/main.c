@@ -1,4 +1,7 @@
+
+
 #include <stdio.h>
+#define _POSIX_C_SOURCE >= 199309
 #include <time.h>
 
 #include "common.h"
@@ -9,13 +12,14 @@ static char* read_file(const char* path);
 int main(int argc, char *argv[])
 {
     struct timespec t0, t1, t2, t3;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &t0);
-    const char* code = read_file("/home/ostkaka/Desktop/test.js");//"int sten = 3.14;";
+    timespec_get(&t0, TIME_UTC);
+    const char* code = read_file("/home/ost/Desktop/test.js");//"int sten = 3.14;";
+    if (!code)
 
-    clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
+    timespec_get(&t0, TIME_UTC);
     vec_token_t tokens = scan(code);
 
-    clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
+    timespec_get(&t2, TIME_UTC);
     for (int i = 0; i < tokens.length; i++) {
         token_t token = tokens.data[i];
         printf("%.*s ", token.len, code + token.index);
@@ -32,6 +36,7 @@ int main(int argc, char *argv[])
 
 static char* read_file(const char* path) {
     FILE* file = fopen(path, "r");
+    if (!file) return NULL;
     fseek(file, 0, SEEK_END);
     size_t file_size = ftell(file);
     void* data = malloc(file_size);

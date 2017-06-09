@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=c11 -lm -g   CMakeFiles/CDig.dir/src/external/vec.c.o CMakeFiles/CDig.dir/src/main.c.o  -o CDig -rdynamic 
