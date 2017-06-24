@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "common.h"
-#include "scan.h"
+#include "token.h"
 
 static char* read_file(const char* path);
 
@@ -13,16 +13,20 @@ int main(int argc, char *argv[])
 {
     struct timespec t0, t1, t2, t3;
     timespec_get(&t0, TIME_UTC);
-    const char* code = read_file("/home/ost/Desktop/test.js");//"int sten = 3.14;";
-    if (!code)
+    const char* file_name = "../../src/main.c";
+    const char* code = read_file(file_name);//"int sten = 3.14;";
+    if (!code) {
+        printf("ERROR: Could not ope n file '%s'\n", file_name);
+        exit(EXIT_FAILURE);
+    }
 
     timespec_get(&t0, TIME_UTC);
-    vec_token_t tokens = scan(code);
+    vec_token_t tokens = tokenize(code);
 
     timespec_get(&t2, TIME_UTC);
     for (int i = 0; i < tokens.length; i++) {
         token_t token = tokens.data[i];
-        printf("%.*s ", token.len, code + token.index);
+        printf("%.*s ", token.len, token.str);
     }
 
 
