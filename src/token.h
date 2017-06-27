@@ -9,13 +9,14 @@
 #include "external/vec.h"
 
 typedef enum {
-    TOKEN_NULL = 0,
+    TOKEN__NULL = 0,
     TOKEN_IDENTIFIER,
     TOKEN_OPERATOR,
     TOKEN_INT,
     TOKEN_FLOAT,
     TOKEN_CHAR,
-    TOKEN_STRING
+    TOKEN_STRING,
+    TOKEN__END
 } token_type_t;
 
 typedef struct {
@@ -42,7 +43,7 @@ vec_token_t tokenize(const char* src) {
     const char* c = src;
     for (;;) {//while (i + 3 <= buffer_size) {
         token_t token;
-        token.token_enum = TOKEN_NULL;
+        token.token_enum = TOKEN__NULL;
         size_t len = 0;
         
         // Skip whitespace
@@ -59,14 +60,14 @@ vec_token_t tokenize(const char* src) {
         // Skip line comment
         if (c[0] == '/' && c[1] == '/') {
             c += 2;
-            while (c[0] != "\n" && c[0] != '\0' && c[0] != EOF) c++;
+            while (c[0] != '\n' && c[0] != '\0' && c[0] != EOF) c++;
             continue;
         }
 
         // Skip block comment
         if (c[0] == '/' && c[1] == '*') {
             c += 2;
-            while(c[0] != "\n" && c[0] != '\0' && c[0] != EOF) {
+            while(c[0] != '\n' && c[0] != '\0' && c[0] != EOF) {
                 if (c[0] == '*' && c[1] == '/') {
                     c += 2;
                     break;
@@ -120,7 +121,7 @@ vec_token_t tokenize(const char* src) {
             }
             // Char:
             // Operator:
-            if (token.token_enum == TOKEN_NULL && (ispunct(c[0]))) {
+            if (token.token_enum == TOKEN__NULL && (ispunct(c[0]))) {
                 token.token_enum = TOKEN_OPERATOR;
                 // +=  -=  *=  /=  %=  ^=  !=  <=  >=  ==
                 if (c[1] == '=' && (c[0] == '+' || c[0] == '-' || c[0] == '*' || c[0] == '/' || c[0] == '%' || c[0] == '^' || c[0] == '!' || c[0] == '<' || c[0] == '>' || c[0] == '='))
@@ -139,7 +140,7 @@ vec_token_t tokenize(const char* src) {
                     len = 1;
             }
         }
-        if (token.token_enum == TOKEN_NULL) {
+        if (token.token_enum == TOKEN__NULL) {
             printf("Unexpected character '%c'\n", c[0]);
             len = 1;
         }
