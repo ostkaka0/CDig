@@ -3,6 +3,7 @@
 
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "common.h"
 #include "token.h"
@@ -20,7 +21,7 @@ typedef enum {
 } token_type_t;
 
 typedef struct {
-    token_type_t token_enum;
+    token_type_t type;
     int line_num;
     int column_num;
     char* str;
@@ -43,7 +44,7 @@ vec_token_t tokenize(const char* src) {
     const char* c = src;
     for (;;) {//while (i + 3 <= buffer_size) {
         token_t token;
-        token.token_enum = TOKEN__NULL;
+        token.type = TOKEN__NULL;
         size_t len = 0;
         
         // Skip whitespace
@@ -83,11 +84,11 @@ vec_token_t tokenize(const char* src) {
         
         // Identifier
         if (isalpha(c[0]) || c[0] == '_') {
-            token.token_enum = TOKEN_IDENTIFIER;
+            token.type = TOKEN_IDENTIFIER;
             do len++; while (isalnum(c[len]) || c[len] == '_');
         }
         else if (c[0] == '\'') {
-            token.token_enum = TOKEN_CHAR;
+            token.type = TOKEN_CHAR;
             bool backslash = false;
             do {
                 backslash = (!backslash && c[len] == '\\');
@@ -97,7 +98,7 @@ vec_token_t tokenize(const char* src) {
             len++;
         }
         else if (c[0] == '\"') {
-            token.token_enum = TOKEN_STRING;
+            token.type = TOKEN_STRING;
             bool backslash = false;
             do {
                 backslash = (!backslash && c[len] == '\\');
@@ -114,15 +115,15 @@ vec_token_t tokenize(const char* src) {
 
                 if (c[len] == '.') {
                     do len++; while(isdigit(c[len]) || c[len] == '.' || tolower(c[len]) == "f" || tolower(c[len]) == "e");
-                    if (len != 1) token.token_enum = TOKEN_FLOAT;
+                    if (len != 1) token.type = TOKEN_FLOAT;
                     else len = 0;
                 } else
-                   token.token_enum = TOKEN_INT;
+                   token.type = TOKEN_INT;
             }
             // Char:
             // Operator:
-            if (token.token_enum == TOKEN__NULL && (ispunct(c[0]))) {
-                token.token_enum = TOKEN_OPERATOR;
+            if (token.type == TOKEN__NULL && (ispunct(c[0]))) {
+                token.type = TOKEN_OPERATOR;
                 // +=  -=  *=  /=  %=  ^=  !=  <=  >=  ==
                 if (c[1] == '=' && (c[0] == '+' || c[0] == '-' || c[0] == '*' || c[0] == '/' || c[0] == '%' || c[0] == '^' || c[0] == '!' || c[0] == '<' || c[0] == '>' || c[0] == '='))
                     len = 2;
@@ -140,7 +141,7 @@ vec_token_t tokenize(const char* src) {
                     len = 1;
             }
         }
-        if (token.token_enum == TOKEN__NULL) {
+        if (token.type == TOKEN__NULL) {
             printf("Unexpected character '%c'\n", c[0]);
             len = 1;
         }

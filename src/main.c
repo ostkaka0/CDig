@@ -6,11 +6,15 @@
 
 #include "common.h"
 #include "token.h"
+#include "ast.h"
 
 static char* read_file(const char* path);
 
 int main(int argc, char *argv[])
 {
+    ast_datatype_t ast;
+    ast.ast_argument_list = NULL;
+    printf("id: %i\n", ast__datatype_tid);
     struct timespec t0, t1, t2, t3;
     timespec_get(&t0, TIME_UTC);
     const char* file_name = "../../src/main.c";
