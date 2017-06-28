@@ -6,6 +6,8 @@ static vec_ast_t parse(vec_token_t* tokens) {
     vec_init(&decls);
     u32 index = 0;
 
+    memset(ast_data, 0, ast__end__id * sizeof(vec_ast_t));
+
     token_t* token = tokens->data;
 
     while (token->type != TOKEN__NULL) {
@@ -22,8 +24,8 @@ static vec_ast_t parse(vec_token_t* tokens) {
 
 #define CREATE_AST_DATA(name, ...)\
     expr.type = ast_##name##__id;\
-    expr.id = ast_data[ast##name##__id].length;\
-    ast_##name##_t ast##name = { __VA_ARGS__ };\
+    expr.id = ast_data[ast_##name##__id].length;\
+    ast_##name##_t ast_##name = { __VA_ARGS__ };\
     vec_push((vec_ast_##name##_t*)&ast_data[ast_##name##__id], ast_##name)
 
 static ast_t parse_decl(token_t** token, vec_ast_t* ast_data) {
@@ -33,11 +35,11 @@ static ast_t parse_decl(token_t** token, vec_ast_t* ast_data) {
     case TOKEN_IDENTIFIER:
         if (token_equals(**token, "struct")) {
             *token++;
-            if ((**token).type == TOKEN_IDENTIFIER)
+            if ((**token).type == TOKEN_IDENTIFIER) {
                 CREATE_AST_DATA(decl_struct, *(*token++), NULL);
-            else if (token_euqals(**token, "{"))
+            } else if (token_euqals(**token, "{")) {
                 CREATE_AST_DATA(decl_struct, (u32)-1, NULL);
-            else assert(0);
+            } else assert(0);
         } else if (token_equals(**token, "typedef")) {
             *token++;
             CREATE_AST_DATA(decl_typedef, parse_decl(token, ast_data));
