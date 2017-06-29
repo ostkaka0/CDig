@@ -30,13 +30,13 @@ typedef struct {
 
 typedef vec_t(token_t) vec_token_t;
 
-bool token_equals(const token_t token, const char* str) {
+static bool token_equals(const token_t token, const char* str) {
     for (int i = 0; i < token.len; i++)
         if (token.str[i] != str[i]) return false;
     return (str[token.len] == '\0');
 }
 
-vec_token_t tokenize(const char* src) {
+static vec_token_t tokenize(const char* src) {
     vec_token_t tokens;
     vec_init(&tokens);
     int line_num = 0;

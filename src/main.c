@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
     ast_datatype_t ast;
     ast.ast_argument_list = NULL;
-    printf("id: %i\n", ast__datatype_tid);
+    printf("id: %i\n", ast_datatype__id);
     struct timespec t0, t1, t2, t3;
     timespec_get(&t0, TIME_UTC);
     const char* file_name = "../../src/main.c";
@@ -26,8 +26,10 @@ int main(int argc, char *argv[])
 
     timespec_get(&t0, TIME_UTC);
     vec_token_t tokens = tokenize(code);
-
     timespec_get(&t2, TIME_UTC);
+    vec_void_t ast_data[ast__end__id];
+    vec_ast_t decls = parse(&tokens, ast_data);
+
     for (int i = 0; i < tokens.length; i++) {
         token_t token = tokens.data[i];
         printf("%.*s ", token.len, token.str);

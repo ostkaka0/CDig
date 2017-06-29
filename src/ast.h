@@ -66,13 +66,13 @@ AST_T(expr_scope,
 
 enum { ast__end__id = __COUNTER__ - _COUNTER_BASE };
 
-static vec_ast_t parse(vec_token_t* tokens);
-static ast_t parse_decl(token_t** token, vec_ast_t* ast_data);
-static ast_t parse_decl_sruct_impl(token_t** token, vec_ast_t* ast_data, ast_t expr);
-static ast_t parse_decl_function(token_t** token, vec_ast_t* ast_data, ast_t ast_type, token_t token_name);
-static ast_t parse_decl_function_impl(token_t** token, vec_ast_t* ast_data, ast_t expr);
-static ast_t parse_decl_var_assign(token_t** token, vec_ast_t* ast_data, ast_t expr);
-static ast_t parse_type(token_t** token, vec_ast_t* ast_data);
+vec_ast_t parse(vec_token_t* tokens, vec_void_t* ast_data);
+ast_t parse_decl(token_t** token, vec_void_t* ast_data);
+ast_t parse_decl_struct_impl(token_t** token, vec_void_t* ast_data, ast_t expr);
+ast_t parse_decl_function(token_t** token, vec_void_t* ast_data, ast_t ast_type, token_t token_name);
+ast_t parse_decl_function_impl(token_t** token, vec_void_t* ast_data, ast_t expr);
+ast_t parse_decl_var_assign(token_t** token, vec_void_t* ast_data, ast_t expr);
+ast_t parse_type(token_t** token, vec_void_t* ast_data);
 
 /*enum ast_type_t {
     ast__null__id = 0,
