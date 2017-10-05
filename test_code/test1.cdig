@@ -1,14 +1,12 @@
 
 
-#include <stdio.h>
-#define _POSIX_C_SOURCE >= 199309
-#include <time.h>
+//#include <stdio.h>
+//#define _POSIX_C_SOURCE >= 199309
+//#include <time.h>
 
-#include "common.h"
-#include "token.h"
-#include "ast.h"
-
-static char* read_file(const char* path);
+//#include "common.h"
+//#include "token.h"
+//#include "ast.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +15,7 @@ int main(int argc, char *argv[])
     printf("id: %i\n", ast_datatype__id);
     struct timespec t0, t1, t2, t3;
     timespec_get(&t0, TIME_UTC);
-    const char* file_name = "../../test_code/test1.cdig";
+    const char* file_name = "../../src/main.c";
     const char* code = read_file(file_name);//"int sten = 3.14;";
     if (!code) {
         printf("ERROR: Could not ope n file '%s'\n", file_name);
@@ -44,7 +42,7 @@ int main(int argc, char *argv[])
 }
 
 
-static char* read_file(const char* path) {
+char* read_file(const char* path) {
     FILE* file = fopen(path, "r");
     if (!file) return NULL;
     fseek(file, 0, SEEK_END);

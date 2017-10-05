@@ -155,6 +155,9 @@ static vec_token_t tokenize(const char* src) {
         c += len;
         column_num += len;
     }
+    token_t null_token;
+    null_token.type = TOKEN__NULL;
+    vec_push(&tokens, null_token);
     return tokens;
 }
 

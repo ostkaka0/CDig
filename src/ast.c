@@ -35,22 +35,22 @@ ast_t parse_decl(token_t** token, vec_void_t* ast_data) {
     switch ((*token)->type) {
     case TOKEN_IDENTIFIER:
         if (token_equals(**token, "struct")) {
-            *token++;
+            (*token)++;
             if ((**token).type == TOKEN_IDENTIFIER) {
-                CREATE_AST_DATA(decl_struct, *(*token++), NULL);
+                CREATE_AST_DATA(decl_struct, *((*token)++), NULL);
             } else if (token_equals(**token, "{")) {
                 CREATE_AST_DATA(decl_struct, (u32)-1, NULL);
             } else assert(0);
         } else if (token_equals(**token, "typedef")) {
-            *token++;
+            (*token)++;
             CREATE_AST_DATA(decl_typedef, parse_decl(token, ast_data));
             return expr;
         } else {
             // AST_DECL_FUNCTION or AST_DECL_VAR:
             ast_t ast_type = parse_type(token, ast_data);
             assert((*token)->type == TOKEN_IDENTIFIER);
-            assert((*token + 1)->type == TOKEN_IDENTIFIER);
-            token_t token_name = *(*token++);
+            assert(((*token) + 1)->type == TOKEN_OPERATOR);
+            token_t token_name = *((*token)++);
             token_t token_symbol = *(*token);
             if (token_equals(token_symbol, "("))
                 expr = parse_decl_function(token, ast_data, ast_type, token_name);
@@ -76,7 +76,7 @@ ast_t parse_decl(token_t** token, vec_void_t* ast_data) {
 
 ast_t parse_decl_struct_impl(token_t** token, vec_void_t* ast_data, ast_t expr) {
     assert((*token)->type == TOKEN_OPERATOR && token_equals(**token, "{"));
-    *token++;
+    (*token)++;
     assert(0);
 }
 
@@ -86,21 +86,21 @@ ast_t parse_decl_function(token_t** token, vec_void_t* ast_data, ast_t ast_type,
 
 ast_t parse_decl_function_impl(token_t** token, vec_void_t* ast_data, ast_t expr) {
     assert((*token)->type == TOKEN_OPERATOR && token_equals(**token, "{"));
-    *token++;
+    (*token)++;
     assert(0);
 }
 
 ast_t parse_decl_var_assign(token_t** token, vec_void_t* ast_data, ast_t expr) {
     assert((*token)->type == TOKEN_OPERATOR && token_equals(**token, "="));
-    *token++;
-    while((**token).type != TOKEN__NULL && !token_equals(**token, ";")) *token++;
+    (*token)++;
+    while((**token).type != TOKEN__NULL && !token_equals(**token, ";")) (*token)++;
 }
 
 ast_t parse_type(token_t** token, vec_void_t* ast_data) {
     assert((**token).type == TOKEN_IDENTIFIER);
     ast_t expr;
     expr.type = ast_datatype__id;
-    *token++;//expr.token_begin = *token++;
+    (*token)++;//expr.token_begin = (*token)++;
 
     for (;;) {
         if ((**token).type == TOKEN__NULL) assert(0);
@@ -108,9 +108,9 @@ ast_t parse_type(token_t** token, vec_void_t* ast_data) {
         if (token_equals(**token, ",")) assert(0);
         // TODO: Function pointers
         if ((**token).type == TOKEN_IDENTIFIER) {
-            *token++;//expr.token_end = *token++;
+            //(*token)++;//expr.token_end = (*token)++;
             return expr;
         }
-        *token++;
+        (*token)++;
     }
 }
